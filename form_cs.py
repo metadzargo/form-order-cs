@@ -27,6 +27,14 @@ if 'daftar_pesanan' not in st.session_state:
 if 'last_combo' not in st.session_state:
     st.session_state.last_combo = ""
 
+# Input Data Customer
+st.subheader("🧾 Data Customer")
+nama = st.text_input("📌 Nama Lengkap")
+alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
+no_hp = st.text_input("📱 No HP yang aktif")
+pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
+
+# Tambah Produk setelah input no HP
 st.subheader("🛒 Pilih Produk & Jumlah")
 col1, col2 = st.columns(2)
 with col1:
@@ -36,7 +44,7 @@ with col2:
 
 # Auto-tambah jika kombinasi valid dan berbeda dari sebelumnya
 if produk_dipilih != "-" and jumlah_dipilih != "-":
-    combo = f"{produk_dipilih} x {jumlah_dipilih}"
+    combo = f"{produk_dipilih} x {jumlah_dipilih} Pcs"
     if combo != st.session_state.last_combo:
         st.session_state.daftar_pesanan.append(combo)
         st.session_state.last_combo = combo
@@ -56,13 +64,6 @@ if st.session_state.daftar_pesanan:
                 st.session_state.daftar_pesanan.pop(i)
                 st.session_state.last_combo = ""
                 st.experimental_rerun()
-
-# Input Data Customer
-st.subheader("🧾 Data Customer")
-nama = st.text_input("📌 Nama Lengkap")
-alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
-no_hp = st.text_input("📱 No HP yang aktif")
-pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
 # Generate message
 if st.button("Generate Pesan WhatsApp"):
