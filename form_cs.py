@@ -1,9 +1,17 @@
 import streamlit as st
+import json
 
 st.set_page_config(page_title="Form CS WhatsApp", layout="centered")
 st.title("📦 Form Input Order Pelanggan")
 
-# Daftar produk
+# Load data wilayah dari JSON lokal
+with open("idn_area.json", "r", encoding="utf-8") as f:
+    wilayah_data = json.load(f)
+
+# Inisialisasi session state
+if 'daftar_pesanan' not in st.session_state:
+    st.session_state.daftar_pesanan = []
+
 produk_list = [
     "ANKLE-HITAM-S28", "ANKLE-HITAM-M30", "ANKLE-HITAM-L32", "ANKLE-HITAM-XL34",
     "ANKLE-HITAM-XXL36", "ANKLE-HITAM-3XL38", "ANKLE-HITAM-4XL40",
@@ -21,14 +29,22 @@ produk_list = [
 
 jumlah_list = [str(i) for i in range(1, 11)]
 
-# Inisialisasi session state
-if 'daftar_pesanan' not in st.session_state:
-    st.session_state.daftar_pesanan = []
-
-# Input Data Customer
 st.subheader("🧾 Data Customer")
 nama = st.text_input("📌 Nama Lengkap")
-alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
+
+# Dropdown alamat berjenjang
+provinsi = st.selectbox("Provinsi", list(wilayah_data.keys()))
+kabupaten = st.selectbox("Kabupaten/Kota", list(wilayah_data[provinsi].keys()))
+kecamatan = st.selectbox("Kecamatan", list(wilayah_data[provinsi][kabupaten].keys()))
+kelurahan_list = list(wilayah_data[provinsi][kabupaten][kecamatan].keys())
+kelurahan = st.selectbox("Kelurahan/Desa", kelurahan_list)
+
+# Ambil kode pos otomatis
+kode_pos = wilayah_data[provinsi][kabupaten][kecamatan][kelurahan]
+st.text_input("Kode Pos", kode_pos, disabled=True)
+
+# Alamat tambahan manual
+alamat_tambahan = st.text_area("📝 Alamat Lengkap (RT/RW, Jalan, Patokan, dsb)")
 no_hp = st.text_input("📱 No HP yang aktif")
 pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
@@ -58,14 +74,15 @@ if st.session_state.daftar_pesanan:
 
 # Generate message
 if st.button("Generate Pesan WhatsApp"):
-    if not all([nama, alamat, no_hp, st.session_state.daftar_pesanan, pembayaran]):
+    if not all([nama, alamat_tambahan, no_hp, st.session_state.daftar_pesanan, pembayaran]):
         st.warning("Harap isi semua kolom terlebih dahulu.")
     else:
+        full_address = f"{alamat_tambahan}, Kel. {kelurahan}, Kec. {kecamatan}, {kabupaten}, {provinsi}, {kode_pos}"
         produk_text = "\n".join([f"- {item}" for item in st.session_state.daftar_pesanan])
 
         pesan = f"""
 📌 Nama Lengkap: {nama}
-🏠 Alamat Lengkap: {alamat}
+🏠 Alamat Lengkap: {full_address}
 📱 No HP yang aktif: {no_hp}
 👖 Produk yang dipesan:\n{produk_text}
 💳 Metode Pembayaran: {pembayaran}
@@ -79,6 +96,8 @@ Pesanan yang masuk atau transfer sebelum **jam 15.00 WIB**, akan kami kirim **ha
             pesan += "jangan lupa untuk **lampirkan screenshot bukti transfernya**, lalu kirim ke aku (Meta) ya Kak 📸✅\n"
         else:
             pesan += "\nKalau COD, cukup kirim datanya saja, dan bayar saat barang sampai.\n"
+
+        pesan += "\nSetelah Kakak isi, aku langsung bantu proses ya 😊"
 
         st.success("Pesan berhasil dibuat!")
         st.text_area("👇 Salin pesan ini", value=pesan.strip(), height=300)
