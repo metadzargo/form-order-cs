@@ -24,22 +24,18 @@ jumlah_list = [str(i) for i in range(1, 11)]
 # Inisialisasi session state
 if 'daftar_pesanan' not in st.session_state:
     st.session_state.daftar_pesanan = []
-if 'last_added' not in st.session_state:
-    st.session_state.last_added = ""
 
 st.subheader("🛒 Tambah Produk ke Pesanan")
-col1, col2 = st.columns(2)
-with col1:
-    produk_dipilih = st.selectbox("Pilih Produk", produk_list, key="produk")
-with col2:
-    jumlah_dipilih = st.selectbox("Jumlah (pcs)", jumlah_list, key="jumlah")
+with st.form("form_produk"):
+    col1, col2 = st.columns(2)
+    with col1:
+        produk_dipilih = st.selectbox("Pilih Produk", produk_list)
+    with col2:
+        jumlah_dipilih = st.selectbox("Jumlah (pcs)", jumlah_list)
+    tambah = st.form_submit_button("➕ Tambah Produk")
 
-# Tambah otomatis jika berbeda dari last_added
-current_combo = f"{produk_dipilih} x {jumlah_dipilih}"
-if current_combo != st.session_state.last_added:
-    st.session_state.daftar_pesanan.append(current_combo)
-    st.session_state.last_added = current_combo
-    st.experimental_rerun()
+    if tambah:
+        st.session_state.daftar_pesanan.append(f"{produk_dipilih} x {jumlah_dipilih}")
 
 # Tampilkan daftar pesanan
 if st.session_state.daftar_pesanan:
