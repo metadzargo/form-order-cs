@@ -32,25 +32,28 @@ if st.button("Generate Pesan WhatsApp"):
     if not all([nama, alamat, no_hp, produk_terpilih, pembayaran]):
         st.warning("Harap isi semua kolom terlebih dahulu.")
     else:
-        produk_text = "\\n".join([f"- {p}" for p in produk_terpilih])
+        produk_text = "\n".join([f"- {p}" for p in produk_terpilih])
+        produk_text = "\n" + produk_text  # Tambahkan newline di awal daftar
+
         pesan = f"""
 📌 Nama Lengkap: {nama}
 🏠 Alamat Lengkap: {alamat}
 📱 No HP yang aktif: {no_hp}
-👖 Produk yang dipesan:\\n{produk_text}
+👖 Produk yang dipesan:{produk_text}
 💳 Metode Pembayaran: {pembayaran}
 
 🕒 Catatan Penting:
 Pesanan yang masuk atau transfer sebelum **jam 15.00 WIB**, akan kami kirim **hari ini juga** 🚚💨
 """
-        if pembayaran == "Transfer Bank":
-            pesan += "Jika Kakak memilih **Transfer Bank**,\\n"
-            pesan += "jangan lupa untuk **lampirkan screenshot bukti transfernya**, lalu kirim ke aku (Meta) ya Kak 📸✅\\n"
-        else:
-            pesan += "Kalau COD, cukup kirim datanya saja, dan bayar saat barang sampai.\\n"
 
-        pesan += "\\nSetelah Kakak isi, aku langsung bantu proses ya 😊"
+        if pembayaran == "Transfer Bank":
+            pesan += "\nJika Kakak memilih **Transfer Bank**,\n"
+            pesan += "jangan lupa untuk **lampirkan screenshot bukti transfernya**, lalu kirim ke aku (Meta) ya Kak 📸✅\n"
+        else:
+            pesan += "\nKalau COD, cukup kirim datanya saja, dan bayar saat barang sampai.\n"
+
+        pesan += "\nSetelah Kakak isi, aku langsung bantu proses ya 😊"
 
         st.success("Pesan berhasil dibuat!")
-        st.text_area("👇 Salin pesan ini", value=pesan, height=300)
-        st.code(pesan, language='markdown')
+        st.text_area("👇 Salin pesan ini", value=pesan.strip(), height=300)
+        st.code(pesan.strip(), language='markdown')
