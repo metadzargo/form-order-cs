@@ -38,18 +38,18 @@ pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 st.subheader("🛒 Pilih Produk & Jumlah")
 col1, col2 = st.columns(2)
 with col1:
-    produk_dipilih = st.selectbox("Pilih Produk", ["-"] + produk_list, key="produk")
+    produk_index = st.selectbox("Pilih Produk", options=["-"] + produk_list, key="produk_key")
 with col2:
-    jumlah_dipilih = st.selectbox("Jumlah (pcs)", ["-"] + jumlah_list, key="jumlah")
+    jumlah_index = st.selectbox("Jumlah (pcs)", options=["-"] + jumlah_list, key="jumlah_key")
 
-# Auto-tambah jika kombinasi valid dan berbeda dari sebelumnya
-if produk_dipilih != "-" and jumlah_dipilih != "-":
-    combo = f"{produk_dipilih} x {jumlah_dipilih} Pcs"
+# Auto-tambah jika valid dan berbeda dari sebelumnya
+if produk_index != "-" and jumlah_index != "-":
+    combo = f"{produk_index} x {jumlah_index} Pcs"
     if combo != st.session_state.last_combo:
         st.session_state.daftar_pesanan.append(combo)
         st.session_state.last_combo = combo
-        st.session_state.produk = "-"
-        st.session_state.jumlah = "-"
+        st.session_state.pop("produk_key")
+        st.session_state.pop("jumlah_key")
         st.experimental_rerun()
 
 # Tampilkan daftar pesanan
