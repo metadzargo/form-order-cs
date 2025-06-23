@@ -1,5 +1,4 @@
 import streamlit as st
-from datetime import datetime
 
 st.set_page_config(page_title="Form CS WhatsApp", layout="centered")
 st.title("📦 Form Input Order Pelanggan")
@@ -20,26 +19,56 @@ produk_list = [
     "ANKLE-CREAM-XXL36", "ANKLE-CREAM-3XL38", "ANKLE-CREAM-4XL40"
 ]
 
-# Input Fields
+jumlah_list = [str(i) for i in range(1, 11)]
+
+# Inisialisasi daftar pesanan
+if 'daftar_pesanan' not in st.session_state:
+    st.session_state.daftar_pesanan = []
+
+st.subheader("🛒 Tambah Produk ke Pesanan")
+col1, col2 = st.columns(2)
+with col1:
+    produk_dipilih = st.selectbox("Pilih Produk", produk_list, key="produk")
+with col2:
+    jumlah_dipilih = st.selectbox("Jumlah (pcs)", jumlah_list, key="jumlah")
+
+# Tambahkan ke daftar pesanan jika belum ada input kosong
+if produk_dipilih and jumlah_dipilih:
+    st.session_state.daftar_pesanan.append(f"{produk_dipilih} x {jumlah_dipilih}")
+    # Reset pilihan (force rerun)
+    st.experimental_rerun()
+
+# Tampilkan daftar pesanan
+if st.session_state.daftar_pesanan:
+    st.markdown("### 📋 Daftar Produk yang Dipesan:")
+    for i, item in enumerate(st.session_state.daftar_pesanan):
+        col1, col2 = st.columns([9, 1])
+        with col1:
+            st.write(f"{i+1}. {item}")
+        with col2:
+            if st.button("❌", key=f"hapus_{i}"):
+                st.session_state.daftar_pesanan.pop(i)
+                st.experimental_rerun()
+
+# Input Data Customer
+st.subheader("🧾 Data Customer")
 nama = st.text_input("📌 Nama Lengkap")
 alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
 no_hp = st.text_input("📱 No HP yang aktif")
-produk_terpilih = st.multiselect("👖 Produk yang dipesan (bisa lebih dari satu)", produk_list)
 pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
 # Generate message
 if st.button("Generate Pesan WhatsApp"):
-    if not all([nama, alamat, no_hp, produk_terpilih, pembayaran]):
+    if not all([nama, alamat, no_hp, st.session_state.daftar_pesanan, pembayaran]):
         st.warning("Harap isi semua kolom terlebih dahulu.")
     else:
-        produk_text = "\n".join([f"- {p}" for p in produk_terpilih])
-        produk_text = "\n" + produk_text  # Tambahkan newline di awal daftar
+        produk_text = "\n".join([f"- {item}" for item in st.session_state.daftar_pesanan])
 
         pesan = f"""
 📌 Nama Lengkap: {nama}
 🏠 Alamat Lengkap: {alamat}
 📱 No HP yang aktif: {no_hp}
-👖 Produk yang dipesan:{produk_text}
+👖 Produk yang dipesan:\n{produk_text}
 💳 Metode Pembayaran: {pembayaran}
 
 🕒 Catatan Penting:
