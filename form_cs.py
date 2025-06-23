@@ -24,12 +24,6 @@ jumlah_list = [str(i) for i in range(1, 11)]
 # Inisialisasi session state
 if 'daftar_pesanan' not in st.session_state:
     st.session_state.daftar_pesanan = []
-if 'last_combo' not in st.session_state:
-    st.session_state.last_combo = ""
-if 'produk_key' not in st.session_state:
-    st.session_state.produk_key = "-"
-if 'jumlah_key' not in st.session_state:
-    st.session_state.jumlah_key = "-"
 
 # Input Data Customer
 st.subheader("🧾 Data Customer")
@@ -38,23 +32,17 @@ alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
 no_hp = st.text_input("📱 No HP yang aktif")
 pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
-# Tambah Produk setelah input no HP
-st.subheader("🛒 Pilih Produk & Jumlah")
+# Tambah Produk
+st.subheader("🛒 Tambah Produk ke Pesanan")
 col1, col2 = st.columns(2)
 with col1:
-    produk_index = st.selectbox("Pilih Produk", options=["-"] + produk_list, index=0 if st.session_state.produk_key == "-" else produk_list.index(st.session_state.produk_key)+1, key="produk_key")
+    produk_dipilih = st.selectbox("Pilih Produk", produk_list, key="produk")
 with col2:
-    jumlah_index = st.selectbox("Jumlah (pcs)", options=["-"] + jumlah_list, index=0 if st.session_state.jumlah_key == "-" else jumlah_list.index(st.session_state.jumlah_key)+1, key="jumlah_key")
+    jumlah_dipilih = st.selectbox("Jumlah (pcs)", jumlah_list, key="jumlah")
 
-# Auto-tambah jika valid dan berbeda dari sebelumnya
-if st.session_state.produk_key != "-" and st.session_state.jumlah_key != "-":
-    combo = f"{st.session_state.produk_key} x {st.session_state.jumlah_key} Pcs"
-    if combo != st.session_state.last_combo:
-        st.session_state.daftar_pesanan.append(combo)
-        st.session_state.last_combo = combo
-        st.session_state.produk_key = "-"
-        st.session_state.jumlah_key = "-"
-        st.experimental_rerun()
+if st.button("+ Tambah Produk"):
+    item = f"{produk_dipilih} x {jumlah_dipilih} Pcs"
+    st.session_state.daftar_pesanan.append(item)
 
 # Tampilkan daftar pesanan
 if st.session_state.daftar_pesanan:
@@ -66,7 +54,6 @@ if st.session_state.daftar_pesanan:
         with col2:
             if st.button("❌", key=f"hapus_{i}"):
                 st.session_state.daftar_pesanan.pop(i)
-                st.session_state.last_combo = ""
                 st.experimental_rerun()
 
 # Generate message
