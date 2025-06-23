@@ -80,8 +80,6 @@ Pesanan yang masuk atau transfer sebelum **jam 15.00 WIB**, akan kami kirim **ha
         else:
             pesan += "\nKalau COD, cukup kirim datanya saja, dan bayar saat barang sampai.\n"
 
-        pesan += "\nSetelah Kakak isi, aku langsung bantu proses ya 😊"
-
         st.success("Pesan berhasil dibuat!")
         st.text_area("👇 Salin pesan ini", value=pesan.strip(), height=300)
         st.code(pesan.strip(), language='markdown')
