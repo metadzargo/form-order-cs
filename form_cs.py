@@ -21,9 +21,11 @@ produk_list = [
 
 jumlah_list = [str(i) for i in range(1, 11)]
 
-# Inisialisasi daftar pesanan
+# Inisialisasi session state
 if 'daftar_pesanan' not in st.session_state:
     st.session_state.daftar_pesanan = []
+if 'last_added' not in st.session_state:
+    st.session_state.last_added = ""
 
 st.subheader("🛒 Tambah Produk ke Pesanan")
 col1, col2 = st.columns(2)
@@ -32,10 +34,11 @@ with col1:
 with col2:
     jumlah_dipilih = st.selectbox("Jumlah (pcs)", jumlah_list, key="jumlah")
 
-# Tambahkan ke daftar pesanan jika belum ada input kosong
-if produk_dipilih and jumlah_dipilih:
-    st.session_state.daftar_pesanan.append(f"{produk_dipilih} x {jumlah_dipilih}")
-    # Reset pilihan (force rerun)
+# Tambah otomatis jika berbeda dari last_added
+current_combo = f"{produk_dipilih} x {jumlah_dipilih}"
+if current_combo != st.session_state.last_added:
+    st.session_state.daftar_pesanan.append(current_combo)
+    st.session_state.last_added = current_combo
     st.experimental_rerun()
 
 # Tampilkan daftar pesanan
