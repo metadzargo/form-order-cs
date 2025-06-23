@@ -26,6 +26,10 @@ if 'daftar_pesanan' not in st.session_state:
     st.session_state.daftar_pesanan = []
 if 'last_combo' not in st.session_state:
     st.session_state.last_combo = ""
+if 'produk_key' not in st.session_state:
+    st.session_state.produk_key = "-"
+if 'jumlah_key' not in st.session_state:
+    st.session_state.jumlah_key = "-"
 
 # Input Data Customer
 st.subheader("🧾 Data Customer")
@@ -38,18 +42,18 @@ pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 st.subheader("🛒 Pilih Produk & Jumlah")
 col1, col2 = st.columns(2)
 with col1:
-    produk_index = st.selectbox("Pilih Produk", options=["-"] + produk_list, key="produk_key")
+    produk_index = st.selectbox("Pilih Produk", options=["-"] + produk_list, index=0 if st.session_state.produk_key == "-" else produk_list.index(st.session_state.produk_key)+1, key="produk_key")
 with col2:
-    jumlah_index = st.selectbox("Jumlah (pcs)", options=["-"] + jumlah_list, key="jumlah_key")
+    jumlah_index = st.selectbox("Jumlah (pcs)", options=["-"] + jumlah_list, index=0 if st.session_state.jumlah_key == "-" else jumlah_list.index(st.session_state.jumlah_key)+1, key="jumlah_key")
 
 # Auto-tambah jika valid dan berbeda dari sebelumnya
-if produk_index != "-" and jumlah_index != "-":
-    combo = f"{produk_index} x {jumlah_index} Pcs"
+if st.session_state.produk_key != "-" and st.session_state.jumlah_key != "-":
+    combo = f"{st.session_state.produk_key} x {st.session_state.jumlah_key} Pcs"
     if combo != st.session_state.last_combo:
         st.session_state.daftar_pesanan.append(combo)
         st.session_state.last_combo = combo
-        st.session_state.pop("produk_key")
-        st.session_state.pop("jumlah_key")
+        st.session_state.produk_key = "-"
+        st.session_state.jumlah_key = "-"
         st.experimental_rerun()
 
 # Tampilkan daftar pesanan
