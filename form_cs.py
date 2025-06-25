@@ -29,8 +29,6 @@ if 'daftar_pesanan' not in st.session_state:
 st.subheader("🧾 Data Customer")
 nama = st.text_input("📌 Nama Lengkap")
 alamat = st.text_area("🏠 Alamat Lengkap (RT/RW, Kel, Kec, Kota, Kode Pos)")
-no_hp = st.text_input("📱 No HP yang aktif")
-pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
 # Tambah Produk
 st.subheader("🛒 Tambah Produk ke Pesanan")
@@ -55,6 +53,9 @@ if st.session_state.daftar_pesanan:
             if st.button("❌", key=f"hapus_{i}"):
                 st.session_state.daftar_pesanan.pop(i)
                 st.experimental_rerun()
+
+no_hp = st.text_input("📱 No HP yang aktif")
+pembayaran = st.radio("💳 Metode Pembayaran", ["COD", "Transfer Bank"])
 
 # Generate message
 if st.button("Generate Pesan WhatsApp"):
